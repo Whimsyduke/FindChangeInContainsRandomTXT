@@ -66,7 +66,11 @@ namespace FindChangeInContainsRandomTXT
         /// 比较数据行号字典
         /// </summary>
         public Dictionary<ListBoxItem, ChangeTextLineNumber> DictionaryChangeText { set; get; }
-        
+        const string LogFile = "Log.log";
+        const string RandomAFile = "RandomA.txt";
+        const string RandomBFile = "RandomB.txt";
+        const string CompareFile = "Compare.txt";
+
         /// <summary>
         /// 构造函数
         /// </summary>
@@ -74,6 +78,25 @@ namespace FindChangeInContainsRandomTXT
         {
             InitializeComponent();
             DictionaryChangeText = new Dictionary<ListBoxItem, ChangeTextLineNumber>();
+            StreamReader sr;
+            if (File.Exists(RandomAFile))
+            {
+                sr = new StreamReader(RandomAFile);
+                TextEditor_BaseRandomA.Text = sr.ReadToEnd();
+                sr.Close();
+            }
+            if (File.Exists(RandomBFile))
+            {
+                sr = new StreamReader(RandomBFile);
+                TextEditor_BaseRandomB.Text = sr.ReadToEnd();
+                sr.Close();
+            }
+            if (File.Exists(CompareFile))
+            {
+                sr = new StreamReader(CompareFile);
+                TextEditor_CompareData.Text = sr.ReadToEnd();
+                sr.Close();
+            }
         }
 
         /// <summary>
@@ -85,6 +108,8 @@ namespace FindChangeInContainsRandomTXT
         {
             ListBox_FindList.Items.Clear();
             DictionaryChangeText.Clear();
+            Label_RandomSameCount.Content = "基础共同计数：0";
+            Label_CompareSameCount.Content = "变化结果计数：0";
         }
 
         /// <summary>
@@ -139,7 +164,8 @@ namespace FindChangeInContainsRandomTXT
                     }
                 }
             }
-
+            Label_RandomSameCount.Content = "基础共同计数：" + randomStringList.Count();
+            Label_CompareSameCount.Content = "变化结果计数：" + DictionaryChangeText.Count();
         }
 
         /// <summary>
@@ -149,6 +175,8 @@ namespace FindChangeInContainsRandomTXT
         /// <param name="e">响应事件参数</param>
         private void ListBox_FindList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            ListBoxItem item = ListBox_FindList.SelectedItem as ListBoxItem;
+            if (item == null || !DictionaryChangeText.Keys.Contains(item)) return;
             ChangeTextLineNumber select = DictionaryChangeText[ListBox_FindList.SelectedItem as ListBoxItem];
             TextEditor_BaseRandomA.ScrollTo(select.LineNumberRandomA, 0);
             TextEditor_BaseRandomB.ScrollTo(select.LineNumberRandomB, 0);
@@ -162,13 +190,40 @@ namespace FindChangeInContainsRandomTXT
         /// <param name="e">响应事件参数</param>
         private void Button_SaveLog_Click(object sender, RoutedEventArgs e)
         {
-            StreamWriter sw = new StreamWriter("Log.log", true);
+            StreamWriter sw = new StreamWriter(LogFile, true);
             sw.WriteLine("写日志于:" + DateTime.Now.ToLocalTime());
             foreach (var select in ListBox_FindList.Items)
             {
                 sw.WriteLine((select as ListBoxItem).Content);
             }
             sw.Close();
+        }
+        /// <summary>
+        /// 清理日志
+        /// </summary>
+        /// <param name="sender">响应空间</param>
+        /// <param name="e">响应事件参数</param>
+        private void Button_ClearLog_Click(object sender, RoutedEventArgs e)
+        {
+            StreamWriter sw = new StreamWriter(LogFile, false);
+            sw.Write("");
+            sw.Close();
+        }
+        /// <summary>
+        /// 打开日志
+        /// </summary>
+        /// <param name="sender">响应空间</param>
+        /// <param name="e">响应事件参数</param>
+        private void Button_OpenLog_Click(object sender, RoutedEventArgs e)
+        {
+            if (File.Exists(LogFile))
+            {
+                System.Diagnostics.Process.Start(LogFile);
+            }
+            else
+            {
+                MessageBox.Show("日志文件不存在！");
+            }
         }
         /// <summary>
         /// 保存基础随机AB的文本
@@ -178,10 +233,10 @@ namespace FindChangeInContainsRandomTXT
         private void Button_SaveRandomAB_Click(object sender, RoutedEventArgs e)
         {
             if (MessageBox.Show("是否保存基础随机文本A和B？同意将覆盖旧文件。", "注意", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes) != MessageBoxResult.Yes) return;
-            StreamWriter sw = new StreamWriter("RandomA.txt", true);
+            StreamWriter sw = new StreamWriter(RandomAFile, false);
             sw.Write(TextEditor_BaseRandomA.Text);
             sw.Close();
-            sw = new StreamWriter("RandomB.txt", true);
+            sw = new StreamWriter(RandomBFile, false);
             sw.Write(TextEditor_BaseRandomB.Text);
             sw.Close();
         }
@@ -194,27 +249,61 @@ namespace FindChangeInContainsRandomTXT
         {
             if (MessageBox.Show("是否加载基础随机文本A和B？同意将覆盖当前文本。", "注意", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes) != MessageBoxResult.Yes) return;
             StreamReader sr;
-            if (File.Exists("RandomA.txt"))
+            if (File.Exists(RandomAFile))
             {
-                sr = new StreamReader("RandomA.txt");
+                sr = new StreamReader(RandomAFile);
                 TextEditor_BaseRandomA.Text = sr.ReadToEnd();
                 sr.Close();
             }
             else
             {
-                if (MessageBox.Show("当随机文本A记录前文件不存在，是否将当前文本清除？", "注意", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes) != MessageBoxResult.Yes)
+                if (MessageBox.Show("当前随机文本A记录文件不存在，是否将当前文本清除？", "注意", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes) != MessageBoxResult.Yes)
                     TextEditor_BaseRandomA.Text = "";
             }
-            if (File.Exists("RandomA.txt"))
+            if (File.Exists(RandomAFile))
             {
-                sr = new StreamReader("RandomB.txt");
+                sr = new StreamReader(RandomBFile);
                 TextEditor_BaseRandomB.Text = sr.ReadToEnd();
                 sr.Close();
             }
             else
             {
-                if (MessageBox.Show("当随机文本B记录前文件不存在，是否将当前文本清除？", "注意", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes) != MessageBoxResult.Yes)
+                if (MessageBox.Show("当前随机文本B记录文件不存在，是否将当前文本清除？", "注意", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes) != MessageBoxResult.Yes)
                     TextEditor_BaseRandomB.Text = "";
+            }
+        }
+        /// <summary>
+        /// 保存比较B的文本
+        /// </summary>
+        /// <param name="sender">响应空间</param>
+        /// <param name="e">响应事件参数</param>
+        private void Button_SaveCompare_Click(object sender, RoutedEventArgs e)
+        {
+            if (MessageBox.Show("是否保存比较文本？同意将覆盖旧文件。", "注意", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes) != MessageBoxResult.Yes) return;
+            StreamWriter sw = new StreamWriter(CompareFile, false);
+            sw.Write(TextEditor_CompareData.Text);
+            sw.Close();
+        }
+
+        /// <summary>
+        /// 加载比较B的文本
+        /// </summary>
+        /// <param name="sender">响应空间</param>
+        /// <param name="e">响应事件参数</param>
+        private void Button_LoadCompare_Click(object sender, RoutedEventArgs e)
+        {
+            if (MessageBox.Show("是否加载比较文本？同意将覆盖当前文本。", "注意", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes) != MessageBoxResult.Yes) return;
+            StreamReader sr;
+            if (File.Exists(CompareFile))
+            {
+                sr = new StreamReader(CompareFile);
+                TextEditor_CompareData.Text = sr.ReadToEnd();
+                sr.Close();
+            }
+            else
+            {
+                if (MessageBox.Show("当前比较文件不存在，是否将当前文本清除？", "注意", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes) != MessageBoxResult.Yes)
+                    TextEditor_CompareData.Text = "";
             }
         }
     }

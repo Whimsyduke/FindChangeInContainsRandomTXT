@@ -66,11 +66,17 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <Button Name="Button_GetChange" Content="获取修改" Grid.Column="4" Grid.Row="3" Margin="3" Click="Button_GetChange_Click"/>
-                <Button Name="Button_ClearChange" Content="清理修改" Grid.Column="3" Grid.Row="3" Margin="3" Click="Button_ClearChange_Click"/>
-                <Button Name="Button_SaveLog" Content="保存日志" Grid.Column="2" Grid.Row="3" Margin="3" Click="Button_SaveLog_Click"/>
-                <Button Name="Button_SaveRandomAB" Content="保存日志" Grid.Column="1" Grid.Row="3" Margin="3" Click="Button_SaveRandomAB_Click"/>
-                <Button Name="Button_LoadRandomAB" Content="加载日志" Grid.Column="0" Grid.Row="3" Margin="3" Click="Button_LoadRandomAB_Click"/>
+                <Button Name="Button_GetChange" Content="获取修改" Grid.Column="0" Grid.Row="3" Margin="3" Click="Button_GetChange_Click"/>
+                <Button Name="Button_ClearChange" Content="清理修改" Grid.Column="1" Grid.Row="3" Margin="3" Click="Button_ClearChange_Click"/>
+                <Button Name="Button_SaveLog" Content="保存日志" Grid.Column="0" Grid.Row="2" Margin="3" Click="Button_SaveLog_Click"/>
+                <Button Name="Button_ClearLog" Content="清理日志" Grid.Column="1" Grid.Row="2" Margin="3" Click="Button_ClearLog_Click"/>
+                <Button Name="Button_OpenLog" Content="打开日志" Grid.Column="2" Grid.Row="2" Margin="3" Click="Button_OpenLog_Click"/>
+                <Button Name="Button_SaveRandomAB" Content="保存随机AB" Grid.Column="0" Grid.Row="1" Margin="3" Click="Button_SaveRandomAB_Click"/>
+                <Button Name="Button_LoadRandomAB" Content="加载随机AB" Grid.Column="1" Grid.Row="1" Margin="3" Click="Button_LoadRandomAB_Click"/>
+                <Button Name="Button_SaveCompare" Content="保存比较件" Grid.Column="2" Grid.Row="1" Margin="3" Click="Button_SaveCompare_Click"/>
+                <Button Name="Button_LoadCompare" Content="加载比较" Grid.Column="3" Grid.Row="1" Margin="3" Click="Button_LoadCompare_Click"/>
+                <Label Name="Label_RandomSameCount" Content="基础共同计数：0" VerticalAlignment="Center" Grid.Column="0" Grid.Row="0" Margin="3"/>
+                <Label Name="Label_CompareSameCount" Content="变化结果计数：0" VerticalAlignment="Center" Grid.Column="1" Grid.Row="0" Margin="3"/>
             </Grid>
         </GroupBox>
     </Grid>
